@@ -1,1 +1,664 @@
-ｆｆｆｆ
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>X-Silence (TRC Zenith)</title>
+  
+  <!-- React & Tailwind -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Icons & Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <!-- ==================================================================================== -->
+  <!-- 🎨 EXISTING CSS (X-Silence Dark Theme) -->
+  <!-- ==================================================================================== -->
+  <style>
+    :root {
+      --bg: #0d1117; /* Deep Midnight */
+      --card: rgba(30, 35, 45, 0.6);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text: #ffffff;
+      --text-sub: #8b949e;
+      --accent: #2f81f7; /* Intelligence Blue */
+      --danger: #f85149;
+      --success: #3fb950;
+      --glass: blur(12px);
+    }
+    
+    body {
+      margin: 0; padding: 0;
+      background-color: var(--bg); color: var(--text);
+      font-family: 'Inter', 'Zen Maru Gothic', sans-serif;
+      min-height: 100vh;
+      display: block; 
+    }
+
+    /* Existing App Wrapper */
+    .app-wrapper {
+      width: 100%; max-width: 450px;
+      padding: 20px; min-height: 100vh;
+      display: flex; flex-direction: column;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header.legacy-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 30px; padding-top: 10px;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px;
+    }
+    .logo-box {
+      width: 32px; height: 32px; background: var(--text); color: var(--bg);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 900;
+    }
+    .header-icons { display: flex; gap: 15px; }
+    .header-icon { color: var(--text-sub); cursor: pointer; transition: 0.2s; }
+    .header-icon:hover { color: var(--text); }
+    .header-icon.logout { color: var(--danger); }
+
+    /* Meter Card */
+    .meter-card {
+      background: var(--card); border: 1px solid var(--card-border);
+      backdrop-filter: var(--glass); border-radius: 24px;
+      padding: 25px; text-align: center; margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      position: relative; overflow: hidden;
+    }
+    .status-text { font-size: 0.8rem; color: var(--text-sub); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
+    .status-value { font-size: 2.5rem; font-weight: 800; margin-bottom: 10px; text-shadow: 0 0 20px rgba(47,129,247,0.4); }
+    .status-desc { font-size: 0.9rem; color: var(--accent); }
+
+    /* Tabs */
+    .tabs {
+      display: flex; background: rgba(255,255,255,0.05);
+      padding: 4px; border-radius: 12px; margin-bottom: 25px;
+    }
+    .tab {
+      flex: 1; text-align: center; padding: 10px; font-size: 0.9rem; font-weight: 600;
+      color: var(--text-sub); border-radius: 8px; cursor: pointer; transition: 0.3s;
+    }
+    .tab.active { background: rgba(255,255,255,0.1); color: var(--text); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+
+    /* Content Area */
+    .view-section { display: none; animation: fadeIn 0.4s ease; }
+    .view-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Inputs */
+    .input-group { margin-bottom: 20px; }
+    .grid-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+    
+    label { display: block; color: var(--text-sub); font-size: 0.85rem; margin-bottom: 8px; }
+    
+    input[type="text"], input[type="password"], textarea, select {
+      width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--card-border);
+      color: var(--text); padding: 16px; border-radius: 16px;
+      font-size: 1rem; font-family: inherit; outline: none; transition: 0.3s;
+      appearance: none;
+    }
+
+    /* 🔥 HERO INPUT STYLE */
+    .hero-input-group { text-align: center; margin-bottom: 25px; }
+    .hero-input {
+      padding: 20px !important; font-size: 1.2rem !important;
+      text-align: center; border-width: 2px !important;
+      background: rgba(0,0,0,0.4) !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .hero-input:focus {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 25px rgba(47,129,247,0.2);
+      transform: scale(1.02);
+    }
+    .hero-input::placeholder { color: rgba(255,255,255,0.2); }
+
+    .select-wrapper { position: relative; }
+    .select-wrapper::after {
+      content: '▼'; position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+      font-size: 0.7rem; color: var(--text-sub); pointer-events: none;
+    }
+
+    input:focus, textarea:focus, select:focus { border-color: var(--accent); background: rgba(47,129,247,0.05); }
+
+    /* Checkbox Style */
+    .checkbox-group {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; background: rgba(0,0,0,0.2); 
+      border-radius: 16px; border: 1px solid var(--card-border);
+      cursor: pointer; transition: 0.2s; margin-bottom: 10px;
+    }
+    .checkbox-group:hover { background: rgba(255,255,255,0.03); }
+    .checkbox-group input { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; }
+    .checkbox-group label { margin: 0; cursor: pointer; color: var(--text); font-weight: 500; }
+
+    /* Buttons */
+    .btn {
+      width: 100%; padding: 16px; border: none; border-radius: 30px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: 0.2s; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:active { transform: scale(0.98); }
+    
+    .btn-x { background: #000; color: #fff; margin-top: 15px; border: 1px solid #333; display: none; }
+    .action-btn {
+      width: 100%; padding: 10px; background: transparent; border: 1px solid var(--card-border);
+      color: var(--text-sub); border-radius: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.9rem;
+    }
+
+    /* Result Box */
+    .result-box {
+      margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.03);
+      border-radius: 16px; border: 1px solid var(--card-border);
+      font-size: 0.9rem; line-height: 1.6; color: #ddd; display: none;
+    }
+
+    /* v25.0 Animation Extras */
+    .fade-in { animation: fadeIn 0.4s ease-out; }
+    .modal-enter { animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  </style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel">
+  const { useState, useEffect, useRef } = React;
+
+  // ===========================================================================
+  // 1. TRC v25.0 Foundation Components
+  // ===========================================================================
+
+  const runGas = (func, ...args) => {
+    const tryRun = (retries = 1) => new Promise((resolve, reject) => {
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler((err) => {
+          if (retries > 0) {
+            setTimeout(() => resolve(tryRun(retries - 1)), 1000);
+          } else {
+            reject(new Error(JSON.stringify(err)));
+          }
+        })[func](...args);
+    });
+    return tryRun();
+  };
+
+  // Expose runGas globally for Legacy JS
+  window.runGas = runGas;
+
+  const Spinner = () => <div className="flex justify-center p-4"><span className="material-icons-round animate-spin text-pink-400 text-3xl" aria-label="Loading">autorenew</span></div>;
+
+  const ProgressBar = () => (
+    <div className="w-full h-1.5 bg-gray-100 overflow-hidden" role="progressbar" aria-busy="true">
+      <div className="h-full bg-gradient-to-r from-pink-300 to-purple-400 animate-pulse w-full origin-left transform scale-x-75"></div>
+    </div>
+  );
+
+  const Toast = ({ msg, type, onClose }) => {
+    useEffect(() => { const t = setTimeout(onClose, 4000); return () => clearTimeout(t); }, [onClose]);
+    const colors = type === 'error' ? 'bg-red-500' : 'bg-emerald-500';
+    return (
+      <div className={`fixed bottom-10 left-1/2 transform -translate-x-1/2 ${colors} text-white px-6 py-3 rounded-full shadow-xl z-[300] fade-in flex items-center gap-2 w-max max-w-[90%]`}>
+        <span className="material-icons-round">{type==='error'?'error_outline':'check_circle'}</span>
+        <span className="font-bold text-sm truncate">{msg}</span>
+      </div>
+    );
+  };
+
+  const QuotaHelpModal = ({ onClose, resetTime }) => (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[110] modal-enter p-4" style={{zIndex:999}} aria-modal="true" role="dialog">
+      <div className="bg-white max-w-sm w-full rounded-3xl p-6 shadow-2xl relative overflow-hidden text-gray-800">
+        <button onClick={onClose} aria-label="閉じる" className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10">
+          <span className="material-icons-round">close</span>
+        </button>
+        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-pink-500"></div>
+        <h3 className="text-xl font-bold mb-4 flex items-center gap-2 mt-2">
+          <span className="material-icons-round text-orange-500">sentiment_very_dissatisfied</span>
+          API制限について
+        </h3>
+        <div className="bg-orange-50 border border-orange-100 p-4 rounded-xl mb-6">
+          <p className="text-sm text-gray-700 font-medium leading-relaxed">
+            APIの利用制限に達したようです。<br/>
+            回復目安: <strong className="text-orange-600">{resetTime || "明日"}ごろ</strong><br/>
+            <span className="text-xs text-gray-500">Googleアカウントを複数作成することで、API利用量の増減ができます。</span>
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={onClose} className="flex-1 bg-gray-100 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-200 text-sm">閉じる</button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const SettingsModal = ({ onClose, onLogout, onClearCache }) => {
+    useEffect(() => {
+      const onKey = e => e.key === "Escape" && onClose();
+      window.addEventListener("keydown", onKey);
+      return () => window.removeEventListener("keydown", onKey);
+    }, [onClose]);
+
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[90] modal-enter p-4" style={{zIndex:999}} aria-modal="true" role="dialog">
+        <div className="bg-white w-full max-w-xs rounded-2xl p-5 shadow-xl relative text-gray-800">
+          <button onClick={onClose} aria-label="閉じる" className="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
+            <span className="material-icons-round text-lg">close</span>
+          </button>
+          <h3 className="font-bold text-gray-700 mb-4 text-center">設定メニュー</h3>
+          <div className="space-y-3">
+            <button onClick={onClearCache} className="w-full py-3 bg-gray-50 text-gray-600 rounded-xl font-bold hover:bg-gray-100 flex items-center justify-center gap-2 text-sm">
+              <span className="material-icons-round">cleaning_services</span> キャッシュ削除
+            </button>
+            <button onClick={() => { if(confirm("APIキーを変更しますか？")) onLogout(false); }} className="w-full py-3 bg-orange-50 text-orange-500 rounded-xl font-bold hover:bg-orange-100 flex items-center justify-center gap-2 text-sm">
+              <span className="material-icons-round">vpn_key</span> APIキー変更
+            </button>
+            <button onClick={() => onLogout(false)} className="w-full py-3 bg-red-50 text-red-500 rounded-xl font-bold hover:bg-red-100 flex items-center justify-center gap-2 text-sm">
+              <span className="material-icons-round">logout</span> ログアウト
+            </button>
+             <button onClick={() => { if(confirm("【警告】\nすべてのデータを物理的に削除します。\n復元はできません。よろしいですか？")) onLogout(true); }} className="w-full py-2 border border-red-100 text-red-400 rounded-xl text-xs hover:bg-red-50">
+              完全削除してログアウト
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ★Metrics Dashboard (リアルタイム表示)
+  const MetricsDashboard = ({ count, lastTime }) => (
+    <div className="bg-gray-50/10 rounded-lg p-2 text-[10px] text-gray-400 flex justify-between items-center mb-4 mt-2">
+      <span>API Calls: <strong className="text-gray-300">{count}</strong></span>
+      <span>Last Latency: <strong className="text-gray-300">{lastTime}ms</strong></span>
+    </div>
+  );
+
+  // ===========================================================================
+  // 2. Legacy App UI (React Wrapper for X-Silence)
+  // ===========================================================================
+
+  const LegacyAppUI = ({ openSettings, logout, metrics }) => {
+    const [activeTab, setActiveTab] = useState('search');
+    
+    // Toast Event Listener Hook
+    useEffect(() => {
+      window.dispatchEvent(new CustomEvent('ui-ready'));
+    }, []);
+
+    return (
+      <div className="app-wrapper fade-in">
+        <header className="legacy-header">
+          <div className="brand">
+            <div className="logo-box">✕</div>
+            <span>Silence</span>
+          </div>
+          <div className="header-icons">
+            <span className="material-symbols-rounded header-icon" onClick={openSettings} title="設定">settings</span>
+            <span className="material-symbols-rounded header-icon logout" onClick={() => logout(false)} title="ログアウト">logout</span>
+          </div>
+        </header>
+
+        <div className="meter-card">
+          <div className="status-text">Status</div>
+          <div className="status-value" id="status-val">Ready</div>
+          <div className="status-desc">AIノイズキャンセリング待機中</div>
+        </div>
+
+        <MetricsDashboard count={metrics.calls} lastTime={metrics.lastLatency} />
+
+        <div className="tabs">
+          <div className={`tab ${activeTab === 'search' ? 'active' : ''}`} onClick={() => setActiveTab('search')}>🔍 静寂検索</div>
+          <div className={`tab ${activeTab === 'guardian' ? 'active' : ''}`} onClick={() => setActiveTab('guardian')}>🛡️ 危険度診断</div>
+        </div>
+
+        {/* SEARCH VIEW */}
+        <div id="view-search" className={`view-section ${activeTab === 'search' ? 'active' : ''}`}>
+          <div className="input-group hero-input-group">
+            <label>キーワード / トピック</label>
+            <input type="text" id="topic-input" className="hero-input" placeholder="ここに入力..." />
+          </div>
+          
+          <div className="grid-group">
+            <div className="select-wrapper">
+              <label>最低いいね数</label>
+              <select id="min-favs" defaultValue="50">
+                <option value="10">❤️ 10+</option>
+                <option value="50">❤️ 50+</option>
+                <option value="100">❤️ 100+</option>
+                <option value="500">❤️ 500+</option>
+                <option value="1000">❤️ 1000+</option>
+              </select>
+            </div>
+            <div className="select-wrapper">
+              <label>AIフィルター強度</label>
+              <select id="intensity-select">
+                <option value="standard">🔹 標準</option>
+                <option value="extreme">🤫 強力</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="input-group" style={{marginBottom:'10px'}}>
+            <div className="checkbox-group" onClick={() => document.getElementById('no-links-check').click()}>
+              <input type="checkbox" id="no-links-check" onClick={(e) => e.stopPropagation()} />
+              <label htmlFor="no-links-check">🔗 リンク・引用を除外 (厳格)</label>
+            </div>
+          </div>
+
+          <div className="input-group" style={{marginBottom:'25px'}}>
+            <div className="checkbox-group" onClick={() => document.getElementById('include-replies-check').click()}>
+              <input type="checkbox" id="include-replies-check" onClick={(e) => e.stopPropagation()} />
+              <label htmlFor="include-replies-check">💬 リプライ(返信)を含める</label>
+            </div>
+            <div style={{fontSize:'0.75rem', color:'var(--text-sub)', marginTop:'5px', marginLeft:'5px'}}>
+              ※ チェックなしの場合は、返信は表示されません（親記事のみ）。
+            </div>
+          </div>
+
+          <button className="btn btn-primary" id="search-btn" onClick={() => window.runSearch()}>
+            <span className="material-symbols-rounded">manage_search</span>
+            静寂リンクを生成
+          </button>
+
+          <div id="search-result" className="result-box">
+            <div style={{fontSize:'0.8rem', color:'var(--accent)', marginBottom:'8px'}}>AI分析レポート:</div>
+            <div id="search-reason"></div>
+            
+            <a id="x-link" href="#" target="_blank" style={{textDecoration:'none'}}>
+              <button className="btn btn-x">
+                <span style={{fontWeight:'900', fontFamily:'sans-serif'}}>𝕏</span> Xを開く (Clean)
+              </button>
+            </a>
+          </div>
+        </div>
+
+        {/* GUARDIAN VIEW */}
+        <div id="view-guardian" className={`view-section ${activeTab === 'guardian' ? 'active' : ''}`}>
+          <div className="input-group">
+            <label>テキストまたはURLを貼り付け</label>
+            <textarea id="analyze-input" rows="4" placeholder="怪しい投稿の本文をここに貼り付けてください..."></textarea>
+          </div>
+
+          <button className="btn btn-primary" id="analyze-btn" onClick={() => window.runAnalyze()}>
+            <span className="material-symbols-rounded">shield</span>
+            危険度を診断
+          </button>
+
+          <div id="analyze-result" className="result-box">
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px'}}>
+              <span style={{fontSize:'0.9rem'}}>危険度スコア</span>
+              <span id="risk-score" style={{fontWeight:'800', fontSize:'1.2rem'}}>--</span>
+            </div>
+            <div id="risk-bar" style={{height:'6px', background:'#333', borderRadius:'3px', overflow:'hidden', marginBottom:'15px'}}>
+              <div id="risk-fill" style={{width:'0%', height:'100%', background:'var(--success)', transition:'0.5s'}}></div>
+            </div>
+            <div id="risk-text"></div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ===========================================================================
+  // 3. Main App Container (Logic Integration)
+  // ===========================================================================
+
+  function App() {
+    const [isInit, setIsInit] = useState(false);
+    const [hasKey, setHasKey] = useState(false);
+    const [toast, setToast] = useState(null);
+    const [modalMode, setModalMode] = useState(null);
+    const [quotaResetTime, setQuotaResetTime] = useState("");
+    
+    // Metrics & Auth State
+    const [metrics, setMetrics] = useState({ calls: 0, lastLatency: 0 });
+    const [inputKey, setInputKey] = useState("");
+    const [authLoading, setAuthLoading] = useState(false);
+    const [authError, setAuthError] = useState("");
+
+    const showToast = (msg, type='success') => setToast({ msg, type });
+
+    // Listen for custom events from Legacy JS
+    useEffect(() => {
+      const toastHandler = (e) => showToast(e.detail.msg, e.detail.type);
+      const metricHandler = (e) => setMetrics(p => ({ calls: p.calls + 1, lastLatency: e.detail.latency }));
+      
+      window.addEventListener('show-toast', toastHandler);
+      window.addEventListener('update-metrics', metricHandler);
+      return () => {
+        window.removeEventListener('show-toast', toastHandler);
+        window.removeEventListener('update-metrics', metricHandler);
+      };
+    }, []);
+
+    // Init Sequence
+    useEffect(() => {
+      (async () => {
+        try {
+          await runGas('restoreUserData');
+          const res = await runGas('loadUserData');
+          if(res.success) setHasKey(res.hasApiKey);
+        } catch (e) {
+          console.error("Init Error:", e);
+        } finally {
+          setIsInit(true);
+        }
+      })();
+    }, []);
+
+    const handleLogin = async () => {
+      if (!inputKey.trim()) { setAuthError("キーを入力してください"); return; }
+      setAuthLoading(true); setAuthError("");
+      try {
+        // v25.0 testConnection
+        const testRes = await runGas('testApiKey', inputKey.trim());
+        if (!testRes.success) {
+           if (testRes.message.includes("KEY_FORMAT")) throw new Error("キーの形式が正しくありません。");
+           if (testRes.message.includes("INVALID")) throw new Error("APIキーが無効です。");
+           throw new Error(testRes.message);
+        }
+        
+        const saveRes = await runGas('saveApiKey', inputKey.trim());
+        if (!saveRes.success) throw new Error(saveRes.error);
+
+        setHasKey(true);
+        showToast("認証成功！ようこそ。", "success");
+      } catch (e) { setAuthError(e.message); } 
+      finally { setAuthLoading(false); }
+    };
+
+    const handleLogout = async (hardDelete = false) => {
+      setIsInit(false);
+      setModalMode(null);
+      const res = await runGas('clearAllData'); // uses Foundation_deleteUserData(true) inside
+      if (res.success) {
+        alert("ログアウトしました。データを完全に削除しました。");
+        window.location.reload();
+      } else {
+        alert("エラー: " + res.error);
+        window.location.reload();
+      }
+    };
+
+    const handleClearCache = async () => {
+      setModalMode(null);
+      const res = await runGas('clearUserCache');
+      if (res.success) showToast("キャッシュをクリアしました");
+      else showToast("削除失敗: " + res.error, "error");
+    };
+
+    // Expose error handler for legacy JS
+    window.handleGlobalError = (res) => {
+      if (res.error === "QUOTA_EXCEEDED_STRICT") { 
+        setQuotaResetTime(res.resetTime);
+        setModalMode('quota'); 
+      } else if (res.error === "INVALID_KEY_DETECTED") {
+        showToast("APIキーが無効になりました", "error");
+        setTimeout(() => setModalMode('settings'), 1000);
+      } else {
+        showToast("エラー: " + res.error, "error");
+      }
+    };
+
+    if (!isInit) return <div className="h-screen flex items-center justify-center bg-[#0d1117]"><Spinner /></div>;
+
+    if (!hasKey) {
+      return (
+        <div className="min-h-screen flex items-center justify-center p-6 bg-[#0d1117] text-white">
+          <div className="bg-[#161b22] max-w-sm w-full rounded-3xl p-8 shadow-xl text-center fade-in border border-gray-700 relative overflow-hidden">
+             {authLoading && <div className="absolute top-0 left-0 w-full"><ProgressBar /></div>}
+            <div className="w-16 h-16 bg-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-6 text-blue-400 shadow-inner">
+              <span className="material-icons-round text-3xl">vpn_key</span>
+            </div>
+            <h2 className="text-2xl font-bold mb-2 tracking-tight">TRC Secure Login</h2>
+            <p className="text-xs text-gray-400 mb-8 leading-relaxed">
+              X-Silenceを利用するには<br/>Gemini APIキーが必要です。
+            </p>
+            <input 
+              type="password" 
+              value={inputKey} 
+              onChange={(e) => setInputKey(e.target.value)} 
+              placeholder="API Key here..." 
+              className="w-full bg-[#0d1117] border border-gray-600 text-center font-mono text-sm py-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition mb-4 shadow-inner text-white" 
+            />
+            {authError && <div className="mb-4 bg-red-900/30 text-red-400 text-xs font-bold p-3 rounded-xl flex items-center gap-2 leading-tight text-left border border-red-800"><span className="material-icons-round text-sm flex-shrink-0">warning</span><span>{authError}</span></div>}
+            <button 
+              onClick={handleLogin} 
+              disabled={authLoading} 
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl shadow-lg transition disabled:opacity-50"
+            >
+              {authLoading ? "認証中..." : "はじめる"}
+            </button>
+            <p className="mt-6 text-[10px] text-gray-500">TRC Unified Foundation v25.0</p>
+          </div>
+          {toast && <Toast msg={toast.msg} type={toast.type} onClose={()=>setToast(null)} />}
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <LegacyAppUI openSettings={() => setModalMode('settings')} logout={handleLogout} metrics={metrics} />
+        
+        {modalMode === 'settings' && <SettingsModal onClose={() => setModalMode(null)} onLogout={handleLogout} onClearCache={handleClearCache} />}
+        {modalMode === 'quota' && <QuotaHelpModal resetTime={quotaResetTime} onClose={() => setModalMode(null)} />}
+        {toast && <Toast msg={toast.msg} type={toast.type} onClose={()=>setToast(null)} />}
+      </>
+    );
+  }
+
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(<App />);
+
+  // ===========================================================================
+  // 4. Legacy JS Logic (Adapted for Foundation v25.0)
+  // ===========================================================================
+  
+  // Helper to dispatch events
+  window.triggerMetrics = (latency) => window.dispatchEvent(new CustomEvent('update-metrics', { detail: { latency } }));
+  window.showToast = (msg, type) => window.dispatchEvent(new CustomEvent('show-toast', { detail: { msg, type } }));
+
+  // --- Search Function ---
+  window.runSearch = function() {
+    var topic = document.getElementById('topic-input').value;
+    var intensity = document.getElementById('intensity-select').value;
+    var minFavs = document.getElementById('min-favs').value;
+    var noLinks = document.getElementById('no-links-check').checked;
+    var includeReplies = document.getElementById('include-replies-check').checked;
+
+    if(!topic) { window.showToast("キーワードを入力してください", "error"); return; }
+
+    var btn = document.getElementById('search-btn');
+    var resBox = document.getElementById('search-result');
+    var xBtn = document.querySelector('.btn-x');
+
+    btn.disabled = true; btn.innerHTML = '<span class="material-symbols-rounded animate-spin">autorenew</span> 思考中...';
+    resBox.style.display = 'none'; xBtn.style.display = 'none';
+
+    var start = Date.now();
+    // API Key passed as null (handled by backend)
+    window.runGas('generateQuietSearch', null, { 
+      topic: topic, 
+      intensity: intensity,
+      minFavs: minFavs,
+      noLinks: noLinks,
+      includeReplies: includeReplies
+    }).then(function(res) {
+        btn.disabled = false; btn.innerHTML = '<span class="material-symbols-rounded">manage_search</span> 静寂リンクを生成';
+        window.triggerMetrics(Date.now() - start);
+
+        if(res.success) {
+          resBox.style.display = 'block';
+          document.getElementById('search-reason').innerText = res.reason;
+          var url = "https://twitter.com/search?q=" + encodeURIComponent(res.query) + "&src=typed_query&f=live";
+          document.getElementById('x-link').href = url;
+          xBtn.style.display = 'flex';
+          
+          document.getElementById('status-val').innerText = "Clean";
+          document.getElementById('status-val').style.color = "var(--success)";
+        } else {
+          window.handleGlobalError(res);
+        }
+    }).catch(function(err){
+         btn.disabled = false; window.showToast("通信エラー: " + err.message, "error");
+    });
+  }
+
+  // --- Guardian Function ---
+  window.runAnalyze = function() {
+    var text = document.getElementById('analyze-input').value;
+    if(!text) { window.showToast("テキストを入力してください", "error"); return; }
+
+    var btn = document.getElementById('analyze-btn');
+    var resBox = document.getElementById('analyze-result');
+    
+    btn.disabled = true; btn.innerHTML = '<span class="material-symbols-rounded animate-spin">autorenew</span> 診断中...';
+    resBox.style.display = 'none';
+
+    var start = Date.now();
+    window.runGas('analyzePost', null, text).then(function(res) {
+        btn.disabled = false; btn.innerHTML = '<span class="material-symbols-rounded">shield</span> 危険度を診断';
+        window.triggerMetrics(Date.now() - start);
+
+        if(res.success) {
+          var data = res.data;
+          resBox.style.display = 'block';
+          document.getElementById('risk-score').innerText = data.riskLevel + "%";
+          document.getElementById('risk-text').innerText = data.analysis;
+          var fill = document.getElementById('risk-fill');
+          fill.style.width = data.riskLevel + "%";
+          
+          if(data.riskLevel > 70) {
+             fill.style.background = "var(--danger)";
+             document.getElementById('risk-score').style.color = "var(--danger)";
+          } else if(data.riskLevel > 30) {
+             fill.style.background = "#eebb00";
+             document.getElementById('risk-score').style.color = "#eebb00";
+          } else {
+             fill.style.background = "var(--success)";
+             document.getElementById('risk-score').style.color = "var(--success)";
+          }
+        } else {
+          window.handleGlobalError(res);
+        }
+    }).catch(function(err){
+         btn.disabled = false; window.showToast("通信エラー: " + err.message, "error");
+    });
+  }
+</script>
+</body>
+</html>
+
