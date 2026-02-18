@@ -1,5 +1,13 @@
 # X-Silence (TRC Unified Foundation Core v25.1)
 
+## 🚀 ライブデモ
+実際に動作するアプリケーションはこちらからご確認いただけます：
+[**アプリを実行する ([Google Web App URL](https://script.google.com/macros/s/AKfycbyIpMLyxdhp2j98ci_sVgNDt4Smc3WrDpFNdtoX8COf86l3OtoaJS6zl84jIW2KFzPg/exec))**]
+
+> ※本アプリの実行には Google アカウントへのログインが必要です。
+> ※初回実行時に「このアプリは確認されていません」という警告が表示される場合がありますが、これはGASの仕様によるものです。「詳細」→「（アプリ名）に移動」を選択することで実行可能です。
+
+
 ## 概要
 AI（Gemini API）を活用した、X（旧Twitter）利用体験を最適化するためのWebアプリケーション・バックエンドエンジンです。
 本プロジェクトは、Google Apps Script (GAS) を基盤とし、高度なセキュリティ設計とAIモデルの安定的な呼び出し機能を備えています。
